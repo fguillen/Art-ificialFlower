@@ -14,11 +14,16 @@ function setup() {
 
   pointsIndex = 0;
   resetTime();
+  noLoop();
 }
 
 function draw() {
   background(220);
 
+  drawCurve();
+}
+
+function drawCurveMouse(){
   strokeWeight(5);
   point(points[0].x, points[0].y);
   point(points[1].x, points[1].y);
@@ -43,6 +48,44 @@ function draw() {
   if(Date.now() > resetAt) {
     resetPoints();
   }
+}
+
+function drawCurve(){
+  let steps = 20
+  let angleStep = TWO_PI / steps;
+  let x = width/2;
+  let y = height/2;
+  let radio = 200;
+  let curvePoints = new Array(steps);
+  let index = 0;
+
+
+  // calculate points
+  for (let i = 0; i < TWO_PI; i += angleStep) {
+		let sx = x + cos(i) * radio;
+		let sy = y + sin(i) * radio;
+
+    curvePoints[index] = createVector(sx, sy);
+    index ++;
+  }
+
+  // Draw curve
+  noFill();
+  beginShape();
+  curveVertex(curvePoints[curvePoints.length-1].x, curvePoints[curvePoints.length-1].y);
+  for (let i = 0; i < curvePoints.length; i++) {
+    const p = curvePoints[i];
+    strokeWeight(5);
+    point(p.x, p.y);
+
+    strokeWeight(1);
+    curveVertex(p.x, p.y);
+
+    console.log("x: " + p.x + ", y: " + p.y);
+  }
+  curveVertex(curvePoints[0].x, curvePoints[0].y);
+  curveVertex(curvePoints[1].x, curvePoints[1].y);
+  endShape();
 }
 
 function resetPoints() {
