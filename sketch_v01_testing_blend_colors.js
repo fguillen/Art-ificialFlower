@@ -1,15 +1,13 @@
 let points;
 let pointsIndex;
 let resetAt;
-let petalsFormNoiseScale;
-let petalsFormNoiseSpeed;
-let petalsPositionNoiseScale;
-let petalsPositionNoiseSpeed;
+let noiseScale;
+let noiseSpeed;
 let blendModes;
 let blendModeIndex;
 
 function setup() {
-  createCanvas(600, 600);
+  createCanvas(800, 800);
   points = new Array(5);
 
   points[0] = createVector(5, 26);
@@ -19,11 +17,8 @@ function setup() {
   points[4] = createVector(10, 65);
 
   pointsIndex = 0;
-  petalsFormNoiseScale = 5;
-  petalsFormNoiseSpeed = 0.01;
-  petalsPositionNoiseScale = 50;
-  petalsPositionNoiseSpeed = 0.005;
-
+  noiseScale = 50;
+  noiseSpeed = 0.01;
   blendModes = [
     BLEND, DARKEST, LIGHTEST, DIFFERENCE, MULTIPLY, EXCLUSION, SCREEN, REPLACE, OVERLAY, HARD_LIGHT, SOFT_LIGHT, DODGE, BURN, ADD, REMOVE
   ]
@@ -34,51 +29,55 @@ function setup() {
 }
 
 function draw() {
-  background(255);
-
-  drawPetals();
-}
-
-function drawPetals() {
-  let numPetals = 30;
-  let angleStep = TWO_PI / numPetals;
-  let x = width / 2;
-  let y = height / 2;
-  let radio = (height / 2) - 50;
-
-  for (let i = 0; i < TWO_PI; i += angleStep) {
-		let sx = x + (cos(i) * radio);
-		let sy = y + (sin(i) * radio);
-
-    drawPetal(sx, sy, i * 1000);
-  }
-}
-
-function drawPetal(x, y, noiseSeed) {
+  background(220);
   colorMode(HSB);
-  let noiseOffsetX = noise((frameCount * petalsPositionNoiseSpeed) + noiseSeed) * petalsPositionNoiseScale;
-  let noiseOffsetY = noise((frameCount * petalsPositionNoiseSpeed) + noiseSeed + 1000) * petalsPositionNoiseScale;
-  let position = createVector(x, y);
-  position.sub(width / 2, height / 2);
 
-  strokeWeight(5);
-  point(position.x, position.y);
-
-  drawCurve(x + noiseOffsetX, y + noiseOffsetY, 0, color(222, 5, 82), BLEND, 20);
-  drawCurve(x + noiseOffsetX, y + noiseOffsetY, 10000, color(100, 5, 82), BURN, 10);
+  drawCurve(0, color(222, 5, 82), BLEND);
+  drawCurve(10000, color(100, 5, 82), blendModes[blendModeIndex]);
 }
 
-function drawCurve(x, y, noiseSeed, color_, blendModeCode, radio){
-  let steps = 10
+// function drawCurveMouse(){
+//   strokeWeight(5);
+//   point(points[0].x, points[0].y);
+//   point(points[1].x, points[1].y);
+//   point(points[2].x, points[2].y);
+//   point(points[3].x, points[3].y);
+//   point(points[4].x, points[4].y);
+//   strokeWeight(1);
+
+//   noFill();
+//   beginShape();
+//   curveVertex(points[4].x, points[4].y);
+//   curveVertex(points[0].x, points[0].y);
+//   curveVertex(points[1].x, points[1].y);
+//   curveVertex(points[2].x, points[2].y);
+//   curveVertex(points[3].x, points[3].y);
+//   curveVertex(points[4].x, points[4].y);
+//   curveVertex(points[0].x, points[0].y);
+//   curveVertex(points[1].x, points[1].y);
+
+//   endShape();
+
+//   if(Date.now() > resetAt) {
+//     resetPoints();
+//   }
+// }
+
+function drawCurve(noiseSeed, color_, blendModeCode){
+  let steps = 20
   let angleStep = TWO_PI / steps;
+  let x = width/2;
+  let y = height/2;
+  let radio = 200;
   let curvePoints = new Array(steps);
   let index = 0;
+
 
   // calculate points
 
   for (let i = 0; i < TWO_PI; i += angleStep) {
-    let noiseOffsetX = noise((frameCount * petalsFormNoiseSpeed) + (i * 1000) + noiseSeed) * petalsFormNoiseScale;
-    let noiseOffsetY = noise((frameCount * petalsFormNoiseSpeed) + (i * 2000) + noiseSeed) * petalsFormNoiseScale;
+    let noiseOffsetX = noise((frameCount * noiseSpeed) + (i * 1000) + noiseSeed) * noiseScale;
+    let noiseOffsetY = noise((frameCount * noiseSpeed) + (i * 2000) + noiseSeed) * noiseScale;
 		let sx = x + (cos(i) * radio) + noiseOffsetX;
 		let sy = y + (sin(i) * radio) + noiseOffsetY;
 
@@ -91,16 +90,15 @@ function drawCurve(x, y, noiseSeed, color_, blendModeCode, radio){
   push();
   fill(color_);
   blendMode(blendModeCode);
-  noStroke();
   beginShape();
   curveVertex(curvePoints[curvePoints.length-1].x, curvePoints[curvePoints.length-1].y);
 
   for (let i = 0; i < curvePoints.length; i++) {
     const p = curvePoints[i];
-    // strokeWeight(5);
-    // point(p.x, p.y);
+    strokeWeight(5);
+    point(p.x, p.y);
 
-    // strokeWeight(1);
+    strokeWeight(1);
     curveVertex(p.x, p.y);
   }
   // console.log("x: " + curvePoints[0].x + ", y: " + curvePoints[0].y);
