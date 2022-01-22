@@ -22,11 +22,10 @@ function setup() {
   numPetals = 64;
   petalsRadioA = 40;
   petalsRadioB = 10;
-  petalsFormNoiseScale = 5;
+  petalsFormNoiseScale = 2;
   petalsFormNoiseSpeed = 0.01;
   petalsPositionNoiseScale = 10;
   petalsPositionNoiseSpeed = 0.005;
-  petalsInteriorMagnitudeScale = 0.2;
   stemsPositionNoiseScale = 15;
   stemsPositionNoiseSpeed = 0.005;
   stemsMagnitudeNoiseScale = 1;
@@ -69,19 +68,18 @@ function drawPetal(x, y, noiseSeed) {
   let noiseOffsetYExterior = mappedNoise((frameCount * petalsPositionNoiseSpeed) + noiseSeed + 1000) * petalsPositionNoiseScale;
   let noiseOffsetXInterior = mappedNoise((frameCount * petalsPositionNoiseSpeed) + noiseSeed + 2000) * petalsPositionNoiseScale;
   let noiseOffsetYInterior = mappedNoise((frameCount * petalsPositionNoiseSpeed) + noiseSeed + 3000) * petalsPositionNoiseScale;
-  let noiseInteriorIntermediateMagnitude = mappedNoise((frameCount * petalsPositionNoiseSpeed) + noiseSeed + 4000) * petalsInteriorMagnitudeScale;
   let noisedX = x + noiseOffsetXExterior;
   let noisedY = y + noiseOffsetYExterior;
 
   drawStem(noisedX, noisedY, noiseSeed);
 
-  drawCurve(noisedX, noisedY, noiseSeed, colorPetal, BLEND, 20);
+  drawCurve(noisedX, noisedY, 0, colorPetal, BLEND, 20);
 
   let centerPosition = createVector(width / 2, height / 2);
   let petalInteriorPosition = createVector(noisedX + noiseOffsetXInterior, noisedY + noiseOffsetYInterior);
-  let secondPetalPosition = intermediatePosition(centerPosition, petalInteriorPosition, 0.9 + noiseInteriorIntermediateMagnitude);
+  let secondPetalPosition = intermediatePosition(centerPosition, petalInteriorPosition, 0.8);
 
-  drawCurve(secondPetalPosition.x, secondPetalPosition.y, noiseSeed + 10000, colorPetalSecondary, BURN, 10);
+  drawCurve(secondPetalPosition.x, secondPetalPosition.y, 10000, colorPetalSecondary, BURN, 10);
 }
 
 
