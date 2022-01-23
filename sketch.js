@@ -23,9 +23,9 @@ function setup() {
   colorMode(HSB);
 
   flowers = [];
-  flowers.push(new Flower(createVector(300, 100), 40, 150, color(222, 5, 82), 20, 5));
-  flowers.push(new Flower(createVector(500, 500), 64, 250, color(222, 5, 82), 40, 10))
-  flowers.push(new Flower(createVector(150, 700), 20, 100, color(222, 5, 82), 15, 4))
+  flowers.push(new Flower(createVector(300, 100), 40, 100, color(50, 5, 82), 10, 12));
+  flowers.push(new Flower(createVector(500, 500), 64, 250, color(100, 5, 82), 40, 10))
+  flowers.push(new Flower(createVector(150, 700), 20, 100, color(222, 5, 82), 30, 15))
 
   // noLoop();
 }
@@ -68,6 +68,7 @@ class Flower {
     this.color = color_;
     this.petalLength = petalLength;
     this.petalWidth = petalWidth;
+    this.stemWidth = map(stemLength, 0, 300, 1, 6);
 
     this.noisePetalForm = new NoiseWrap(3, 0.01);
     this.noisePetalPosition = new NoiseWrap(10, 0.005);
@@ -75,9 +76,11 @@ class Flower {
     this.noisePetalExteriorOffset = new NoiseWrap(0.1, 0.01);
     this.noiseStemCurvePosition = new NoiseWrap(15, 0.005);
     this.noiseStemCurveOffset = new NoiseWrap(0.2, 0.01);
+    this.noiseStemStroke = new NoiseWrap(2, 0.01);
+
 
     this.colorPetalSecondary = color(hue(this.color), saturation(this.color), brightness(this.color) * 0.4);
-    this.colorStem = color(220, 36, 45);
+    this.colorStem = color(hue(this.color), saturation(this.color) * 4, brightness(this.color) * 0.5);
   }
 
   draw() {
@@ -123,11 +126,13 @@ class Flower {
   drawStem(endPosition, noiseSeed) {
     let noisePosition = this.noiseStemCurvePosition.getVector(frameCount + noiseSeed);
     let noiseOffset = this.noiseStemCurveOffset.get(frameCount + noiseSeed);
+    let noiseStroke = this.noiseStemStroke.get(frameCount + noiseOffset);
     let positionIntermediate = this.intermediatePosition(this.position, endPosition, 0.5 + noiseOffset);
-    positionIntermediate.add(noisePosition)
+    positionIntermediate.add(noisePosition);
 
+    push();
     stroke(this.colorStem);
-    strokeWeight(5);
+    strokeWeight(this.stemWidth + noiseStroke);
     noFill();
     beginShape();
     curveVertex(this.position.x, this.position.y);
@@ -136,6 +141,7 @@ class Flower {
     curveVertex(endPosition.x, endPosition.y);
     curveVertex(endPosition.x, endPosition.y);
     endShape();
+    pop();
   }
 
   // This is the function that real draw the petal
