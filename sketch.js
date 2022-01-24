@@ -1,246 +1,248 @@
-const flowerSketch = p => {
+const flowerSketch = p5_ => {
   let flower;
 
-  p.setup = function() {
-    let canvas = p.createCanvas(800, 800);
+  p5_.setup = function() {
+    let canvas = p5_.createCanvas(800, 800);
     canvas.parent('p5-div');
-    p.frameRate(20);
-    p.colorMode(p.HSB);
-    p.noiseSeed(1);
+    p5_.frameRate(20);
+    p5_.colorMode(p5_.HSB);
+    p5_.noiseSeed(1);
 
     const urlParams = new URLSearchParams(window.location.search);
     let name = urlParams.get("name") || "y1oc9";
-    p.initializeFlower(name);
+    flower = Utils.flowerGenerator(name);
 
     // noLoop();
   }
 
-  p.draw = function() {
-    p.background(255);
+  p5_.draw = function() {
+    p5_.background(255);
     flower.draw();
   }
 
-  p.mouseClicked = function() {
+  p5_.mouseClicked = function() {
     let randomString = (Math.random() + 1).toString(36).substring(2);
-    p.initializeFlower(randomString);
+    flower = Utils.flowerGenerator(randomString);
   }
 
-  p.initializeFlower = function(name) {
-    console.log("New Flower: " + name);
-    flower = p.flowerGenerator(name);
-  }
 
-  p.flowerGenerator = function(name) {
-    let flowerSeed = Math.abs(name.hashCode());
-    console.log("flowerSeed: " + flowerSeed);
+  // Class Utils
+  class Utils {
+    static flowerGenerator(name) {
+      let flowerSeed = Math.abs(name.hashCode());
+      console.log("flowerSeed: " + flowerSeed);
 
-    let position = p.createVector(p.width / 2, p.height / 2);
-    let numPetals = p.mapCustom(flowerSeed, 20, 60);
-    let petalColor = p.color(p.mapCustom(flowerSeed, 0, 255), 5, 82);
-    let petalLength = p.mapCustom(flowerSeed, 15, 60);
-    let petalWidth = p.mapCustom(flowerSeed, 10, 40);
-    let stemLength = p.mapCustom(flowerSeed, p.width / 4, (p.width / 2) - petalLength);
-    let stemWidth = p.mapCustom(flowerSeed, 2, 12);
-    let noisePetalFormScale = p.mapCustom(flowerSeed, 1, 5);
-    let noisePetalPositionScale = p.mapCustom(flowerSeed, 5, 15);
-    let noisePetalInteriorOffsetScale = p.mapCustom(flowerSeed, 0.1, 0.5);
-    let noisePetalExteriorOffsetScale = p.mapCustom(flowerSeed, 0.1, 0.5);
-    let noiseStemCurvePositionScale = p.mapCustom(flowerSeed, 10, 50);
-    let noiseStemCurveOffsetScale = p.mapCustom(flowerSeed, 0.1, 0.4);
+      let position = p5_.createVector(p5_.width / 2, p5_.height / 2);
+      let numPetals = Utils.mapCustom(flowerSeed, 20, 60);
+      let petalColor = p5_.color(Utils.mapCustom(flowerSeed, 0, 255), 5, 82);
+      let petalLength = Utils.mapCustom(flowerSeed, 15, 60);
+      let petalWidth = Utils.mapCustom(flowerSeed, 10, 40);
+      let stemLength = Utils.mapCustom(flowerSeed, p5_.width / 4, (p5_.width / 2) - petalLength);
+      let stemWidth = Utils.mapCustom(flowerSeed, 2, 12);
+      let noisePetalFormScale = Utils.mapCustom(flowerSeed, 1, 5);
+      let noisePetalPositionScale = Utils.mapCustom(flowerSeed, 5, 15);
+      let noisePetalInteriorOffsetScale = Utils.mapCustom(flowerSeed, 0.1, 0.5);
+      let noisePetalExteriorOffsetScale = Utils.mapCustom(flowerSeed, 0.1, 0.5);
+      let noiseStemCurvePositionScale = Utils.mapCustom(flowerSeed, 10, 50);
+      let noiseStemCurveOffsetScale = Utils.mapCustom(flowerSeed, 0.1, 0.4);
 
-    let flower =
-      new Flower(
-        position,
-        numPetals,
-        stemLength,
-        petalColor,
-        petalLength,
-        petalWidth,
-        stemWidth,
-        noisePetalFormScale,
-        noisePetalPositionScale,
-        noisePetalInteriorOffsetScale,
-        noisePetalExteriorOffsetScale,
-        noiseStemCurvePositionScale,
-        noiseStemCurveOffsetScale
-      )
+      let flower =
+        new Flower(
+          position,
+          numPetals,
+          stemLength,
+          petalColor,
+          petalLength,
+          petalWidth,
+          stemWidth,
+          noisePetalFormScale,
+          noisePetalPositionScale,
+          noisePetalInteriorOffsetScale,
+          noisePetalExteriorOffsetScale,
+          noiseStemCurvePositionScale,
+          noiseStemCurveOffsetScale
+        )
 
-    console.log("Flower: ", flower);
-    return flower;
-  }
+      console.log("Flower: ", flower);
+      return flower;
+    }
 
-  p.mapCustom = function(seed, min, max) {
-    return p.map(seed % (max - min), 0, (max - min), min, max);
-  }
-}
-
-class Flower {
-  constructor(
-    position,
-    numPetals,
-    stemLength,
-    color_,
-    petalLength,
-    petalWidth,
-    stemWidth,
-    noisePetalFormScale,
-    noisePetalPositionScale,
-    noisePetalInteriorOffsetScale,
-    noisePetalExteriorOffsetScale,
-    noiseStemCurvePositionScale,
-    noiseStemCurveOffsetScale
-  ) {
-    this.position = position;
-    this.numPetals = numPetals;
-    this.stemLength = stemLength;
-    this.color = color_;
-    this.petalLength = petalLength;
-    this.petalWidth = petalWidth;
-    this.stemWidth = stemWidth;
-
-    this.colorPetalSecondary = p5Ref.color(p5Ref.hue(this.color), p5Ref.saturation(this.color), p5Ref.brightness(this.color) * 0.4);
-    this.colorStem = p5Ref.color(p5Ref.hue(this.color), p5Ref.saturation(this.color) * 4, p5Ref.brightness(this.color) * 0.5);
-
-    this.noisePetalForm = new NoiseWrap(noisePetalFormScale, 0.01, "noisePetalForm");
-    this.noisePetalPosition = new NoiseWrap(noisePetalPositionScale, 0.005, "noisePetalPosition");
-    this.noisePetalInteriorOffset = new NoiseWrap(noisePetalInteriorOffsetScale, 0.01, "noisePetalInteriorOffset");
-    this.noisePetalExteriorOffset = new NoiseWrap(noisePetalExteriorOffsetScale, 0.01, "noisePetalExteriorOffset");
-    this.noiseStemCurvePosition = new NoiseWrap(noiseStemCurvePositionScale, 0.01, "noiseStemCurvePosition");
-    this.noiseStemCurveOffset = new NoiseWrap(noiseStemCurveOffsetScale, 0.01, "noiseStemCurveOffset");
-  }
-
-  draw() {
-    this.drawPetals();
-  }
-
-  drawPetals() {
-    let angleStep = p5Ref.TWO_PI / this.numPetals;
-
-    for (let i = 0; i < p5Ref.TWO_PI; i += angleStep) {
-      let sx = this.position.x + (p5Ref.cos(i) * this.stemLength);
-      let sy = this.position.y + (p5Ref.sin(i) * this.stemLength);
-
-      this.drawPetal(p5Ref.createVector(sx, sy), i * 1000);
+    static mapCustom(seed, min, max) {
+      return p5_.map(seed % (max - min), 0, (max - min), min, max);
     }
   }
 
-  // Draw the petal:
-  // - Stem
-  // - Exterior petal part
-  // - Interior petal part
-  drawPetal(petalPosition, noiseSeed) {
-    // calculating all the noises
-    let noiseExteriorPosition = this.noisePetalPosition.getVector(p5Ref.frameCount + noiseSeed);
-    let noiseInteriorPosition = this.noisePetalPosition.getVector(p5Ref.frameCount + noiseSeed + 1000);
-    let noiseExteriorOffset = this.noisePetalExteriorOffset.get(p5Ref.frameCount + noiseSeed);
-    let noiseInteriorOffset = this.noisePetalInteriorOffset.get(p5Ref.frameCount + noiseSeed);
+  // Class Flower
+  class Flower {
+    constructor(
+      position,
+      numPetals,
+      stemLength,
+      color_,
+      petalLength,
+      petalWidth,
+      stemWidth,
+      noisePetalFormScale,
+      noisePetalPositionScale,
+      noisePetalInteriorOffsetScale,
+      noisePetalExteriorOffsetScale,
+      noiseStemCurvePositionScale,
+      noiseStemCurveOffsetScale
+    ) {
+      this.position = position;
+      this.numPetals = numPetals;
+      this.stemLength = stemLength;
+      this.color = color_;
+      this.petalLength = petalLength;
+      this.petalWidth = petalWidth;
+      this.stemWidth = stemWidth;
 
-    // calculate exterior petal position
-    let noisedPosition = p5Ref.createVector(petalPosition.x + noiseExteriorPosition.x, petalPosition.y + noiseExteriorPosition.y);
-    let exteriorPosition = this.intermediatePosition(this.position, noisedPosition, 1 + noiseExteriorOffset);
+      this.colorPetalSecondary = p5_.color(p5_.hue(this.color), p5_.saturation(this.color), p5_.brightness(this.color) * 0.4);
+      this.colorStem = p5_.color(p5_.hue(this.color), p5_.saturation(this.color) * 4, p5_.brightness(this.color) * 0.5);
 
-    // calculate interior petal position
-    let petalInteriorPosition = p5Ref.createVector(exteriorPosition.x + noiseInteriorPosition.x, exteriorPosition.y + noiseInteriorPosition.y);
-    let interiorPosition = this.intermediatePosition(this.position, petalInteriorPosition, 0.9 + noiseInteriorOffset);
-
-    // draw everything
-    this.drawStem(exteriorPosition, noiseSeed);
-    this.drawPetalCurve(exteriorPosition, noiseSeed, this.color, p5Ref.BLEND, 20);
-    this.drawPetalCurve(interiorPosition, noiseSeed + 10000, this.colorPetalSecondary, p5Ref.BURN, 10); // BURN blendMode so only already painted pixels are painted
-  }
-
-  drawStem(endPosition, noiseSeed) {
-    let noisePosition = this.noiseStemCurvePosition.getVector(p5Ref.frameCount + noiseSeed);
-    let noiseOffset = this.noiseStemCurveOffset.get(p5Ref.frameCount + noiseSeed);
-    let positionIntermediate = this.intermediatePosition(this.position, endPosition, 0.5 + noiseOffset);
-    positionIntermediate.add(noisePosition);
-
-    p5Ref.push();
-    p5Ref.stroke(this.colorStem);
-    p5Ref.strokeWeight(this.stemWidth);
-    p5Ref.noFill();
-    p5Ref.beginShape();
-    p5Ref.curveVertex(this.position.x, this.position.y);
-    p5Ref.curveVertex(this.position.x, this.position.y);
-    p5Ref.curveVertex(positionIntermediate.x, positionIntermediate.y);
-    p5Ref.curveVertex(endPosition.x, endPosition.y);
-    p5Ref.curveVertex(endPosition.x, endPosition.y);
-    p5Ref.endShape();
-    p5Ref.pop();
-  }
-
-  // This is the function that real draw the petal
-  drawPetalCurve(petalPosition, noiseSeed, color_, blendModeCode){
-    let steps = 10
-    let angleStep = p5Ref.TWO_PI / steps;
-    let curvePoints = new Array(steps);
-    let index = 0;
-
-    // Calculate points
-    for (let i = 0; i < p5Ref.TWO_PI; i += angleStep) {
-      let noisePosition = this.noisePetalForm.getVector(p5Ref.frameCount + noiseSeed + (i * 1000));
-      let sx = (p5Ref.cos(i) * this.petalLength) + noisePosition.x;
-      let sy = (p5Ref.sin(i) * this.petalWidth) + noisePosition.y;
-
-      curvePoints[index] = p5Ref.createVector(sx, sy);
-      index ++;
+      this.noisePetalForm = new NoiseWrap(noisePetalFormScale, 0.01, "noisePetalForm");
+      this.noisePetalPosition = new NoiseWrap(noisePetalPositionScale, 0.005, "noisePetalPosition");
+      this.noisePetalInteriorOffset = new NoiseWrap(noisePetalInteriorOffsetScale, 0.01, "noisePetalInteriorOffset");
+      this.noisePetalExteriorOffset = new NoiseWrap(noisePetalExteriorOffsetScale, 0.01, "noisePetalExteriorOffset");
+      this.noiseStemCurvePosition = new NoiseWrap(noiseStemCurvePositionScale, 0.01, "noiseStemCurvePosition");
+      this.noiseStemCurveOffset = new NoiseWrap(noiseStemCurveOffsetScale, 0.01, "noiseStemCurveOffset");
     }
 
-    // Calculate rotation angle
-    let headingVector = p5.Vector.sub(petalPosition, this.position)
-    let angle = headingVector.heading();
-
-    // Draw curve
-    p5Ref.push();
-    p5Ref.fill(color_);
-    p5Ref.blendMode(blendModeCode);
-    p5Ref.noStroke();
-    p5Ref.translate(petalPosition.x, petalPosition.y);
-    p5Ref.rotate(angle);
-    p5Ref.beginShape();
-    p5Ref.curveVertex(curvePoints[curvePoints.length-1].x, curvePoints[curvePoints.length-1].y);
-
-    for (let i = 0; i < curvePoints.length; i++) {
-      p5Ref.curveVertex(curvePoints[i].x, curvePoints[i].y);
+    draw() {
+      this.drawPetals();
     }
-    p5Ref.curveVertex(curvePoints[0].x, curvePoints[0].y);
-    p5Ref.curveVertex(curvePoints[1].x, curvePoints[1].y);
-    p5Ref.endShape();
-    p5Ref.pop();
+
+    drawPetals() {
+      let angleStep = p5_.TWO_PI / this.numPetals;
+
+      for (let i = 0; i < p5_.TWO_PI; i += angleStep) {
+        let sx = this.position.x + (p5_.cos(i) * this.stemLength);
+        let sy = this.position.y + (p5_.sin(i) * this.stemLength);
+
+        this.drawPetal(p5_.createVector(sx, sy), i * 1000);
+      }
+    }
+
+    // Draw the petal:
+    // - Stem
+    // - Exterior petal part
+    // - Interior petal part
+    drawPetal(petalPosition, noiseSeed) {
+      // calculating all the noises
+      let noiseExteriorPosition = this.noisePetalPosition.getVector(p5_.frameCount + noiseSeed);
+      let noiseInteriorPosition = this.noisePetalPosition.getVector(p5_.frameCount + noiseSeed + 1000);
+      let noiseExteriorOffset = this.noisePetalExteriorOffset.get(p5_.frameCount + noiseSeed);
+      let noiseInteriorOffset = this.noisePetalInteriorOffset.get(p5_.frameCount + noiseSeed);
+
+      // calculate exterior petal position
+      let noisedPosition = p5_.createVector(petalPosition.x + noiseExteriorPosition.x, petalPosition.y + noiseExteriorPosition.y);
+      let exteriorPosition = this.intermediatePosition(this.position, noisedPosition, 1 + noiseExteriorOffset);
+
+      // calculate interior petal position
+      let petalInteriorPosition = p5_.createVector(exteriorPosition.x + noiseInteriorPosition.x, exteriorPosition.y + noiseInteriorPosition.y);
+      let interiorPosition = this.intermediatePosition(this.position, petalInteriorPosition, 0.9 + noiseInteriorOffset);
+
+      // draw everything
+      this.drawStem(exteriorPosition, noiseSeed);
+      this.drawPetalCurve(exteriorPosition, noiseSeed, this.color, p5_.BLEND, 20);
+      this.drawPetalCurve(interiorPosition, noiseSeed + 10000, this.colorPetalSecondary, p5_.BURN, 10); // BURN blendMode so only already painted pixels are painted
+    }
+
+    drawStem(endPosition, noiseSeed) {
+      let noisePosition = this.noiseStemCurvePosition.getVector(p5_.frameCount + noiseSeed);
+      let noiseOffset = this.noiseStemCurveOffset.get(p5_.frameCount + noiseSeed);
+      let positionIntermediate = this.intermediatePosition(this.position, endPosition, 0.5 + noiseOffset);
+      positionIntermediate.add(noisePosition);
+
+      p5_.push();
+      p5_.stroke(this.colorStem);
+      p5_.strokeWeight(this.stemWidth);
+      p5_.noFill();
+      p5_.beginShape();
+      p5_.curveVertex(this.position.x, this.position.y);
+      p5_.curveVertex(this.position.x, this.position.y);
+      p5_.curveVertex(positionIntermediate.x, positionIntermediate.y);
+      p5_.curveVertex(endPosition.x, endPosition.y);
+      p5_.curveVertex(endPosition.x, endPosition.y);
+      p5_.endShape();
+      p5_.pop();
+    }
+
+    // This is the function that real draw the petal
+    drawPetalCurve(petalPosition, noiseSeed, color_, blendModeCode){
+      let steps = 10
+      let angleStep = p5_.TWO_PI / steps;
+      let curvePoints = new Array(steps);
+      let index = 0;
+
+      // Calculate points
+      for (let i = 0; i < p5_.TWO_PI; i += angleStep) {
+        let noisePosition = this.noisePetalForm.getVector(p5_.frameCount + noiseSeed + (i * 1000));
+        let sx = (p5_.cos(i) * this.petalLength) + noisePosition.x;
+        let sy = (p5_.sin(i) * this.petalWidth) + noisePosition.y;
+
+        curvePoints[index] = p5_.createVector(sx, sy);
+        index ++;
+      }
+
+      // Calculate rotation angle
+      let headingVector = p5.Vector.sub(petalPosition, this.position)
+      let angle = headingVector.heading();
+
+      // Draw curve
+      p5_.push();
+      p5_.fill(color_);
+      p5_.blendMode(blendModeCode);
+      p5_.noStroke();
+      p5_.translate(petalPosition.x, petalPosition.y);
+      p5_.rotate(angle);
+      p5_.beginShape();
+      p5_.curveVertex(curvePoints[curvePoints.length-1].x, curvePoints[curvePoints.length-1].y);
+
+      for (let i = 0; i < curvePoints.length; i++) {
+        p5_.curveVertex(curvePoints[i].x, curvePoints[i].y);
+      }
+      p5_.curveVertex(curvePoints[0].x, curvePoints[0].y);
+      p5_.curveVertex(curvePoints[1].x, curvePoints[1].y);
+      p5_.endShape();
+      p5_.pop();
+    }
+
+    intermediatePosition(v1, v2, magnitude) {
+      let directionVector = p5.Vector.sub(v2, v1);
+      let length = directionVector.mag();
+      directionVector.setMag(length * magnitude);
+      let positionIntermediate = p5_.createVector(v1.x + directionVector.x, v1.y + directionVector.y);
+
+      return positionIntermediate;
+    }
+
   }
 
-  intermediatePosition(v1, v2, magnitude) {
-    let directionVector = p5.Vector.sub(v2, v1);
-    let length = directionVector.mag();
-    directionVector.setMag(length * magnitude);
-    let positionIntermediate = p5Ref.createVector(v1.x + directionVector.x, v1.y + directionVector.y);
+  class NoiseWrap {
+    constructor(scale, speed, seed = "") {
+      this.scale = scale;
+      this.speed = speed;
+      this.seed = Math.abs(seed.hashCode());
+      this.seed2 = this.seed + 1_000;
+    }
 
-    return positionIntermediate;
+    get(position) {
+      return this.mappedNoise((position * this.speed) + this.seed) * this.scale;
+    }
+
+    getVector(position) {
+      return p5_.createVector(this.get(position), this.get(position + this.seed2));
+    }
+
+    mappedNoise(value) {
+      let n = p5_.noise(value);
+      return p5_.map(n, 0, 1, -1, 1);
+    }
   }
 
 }
 
-class NoiseWrap {
-  constructor(scale, speed, seed = "") {
-    this.scale = scale;
-    this.speed = speed;
-    this.seed = Math.abs(seed.hashCode());
-    this.seed2 = this.seed + 1_000;
-  }
-
-  get(position) {
-    return this.mappedNoise((position * this.speed) + this.seed) * this.scale;
-  }
-
-  getVector(position) {
-    return p5Ref.createVector(this.get(position), this.get(position + this.seed2));
-  }
-
-  mappedNoise(value) {
-    let n = p5Ref.noise(value);
-    return p5Ref.map(n, 0, 1, -1, 1);
-  }
-}
 
 
 // From here: https://stackoverflow.com/a/7616484/316700
