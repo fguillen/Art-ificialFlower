@@ -1,5 +1,6 @@
 const flowerSketch = p5_ => {
   let flower;
+  let name;
 
   p5_.setup = function() {
     let canvas = p5_.createCanvas(800, 800);
@@ -8,14 +9,20 @@ const flowerSketch = p5_ => {
     p5_.colorMode(p5_.HSB);
     p5_.noiseSeed(1);
 
-    const urlParams = new URLSearchParams(window.location.search);
-    let name = urlParams.get("name") || "y1oc9";
-    flower = Utils.flowerGenerator(name);
+    // this.name = this.name || "y1oc9";
+    // flower = Utils.flowerGenerator(this.name);
 
     // noLoop();
   }
 
+  p5_.setName = function (name) {
+    this.name = name;
+    flower = Utils.flowerGenerator(this.name);
+  }
+
   p5_.draw = function() {
+    if(flower == null) return;
+
     p5_.background(255);
     flower.draw();
   }
@@ -30,7 +37,7 @@ const flowerSketch = p5_ => {
   class Utils {
     static flowerGenerator(name) {
       let flowerSeed = Math.abs(name.hashCode());
-      console.log("flowerSeed: " + flowerSeed);
+      console.log("name: '" + name + "', flowerSeed: " + flowerSeed);
 
       let position = p5_.createVector(p5_.width / 2, p5_.height / 2);
       let numPetals = Utils.mapCustom(flowerSeed, 20, 60);
