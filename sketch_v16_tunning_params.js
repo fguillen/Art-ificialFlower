@@ -24,7 +24,7 @@ function flowerGenerator(name) {
 
   let position = createVector(width / 2, height / 2);
   let numPetals = mapCustom(flowerSeed, 20, 60);
-  let petalColor = color(mapCustom(flowerSeed, 0, 255), mapCustom(flowerSeed, 2, 10), mapCustom(flowerSeed, 80, 90));
+  let petalColor = color(mapCustom(flowerSeed, 0, 255), 5, 82);
   let petalLength = mapCustom(flowerSeed, 15, 60);
   let petalWidth = mapCustom(flowerSeed, 10, 40);
   let stemLength = mapCustom(flowerSeed, width / 4, (width / 2) - petalLength);
