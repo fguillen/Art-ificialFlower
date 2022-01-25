@@ -108,7 +108,7 @@ const flowerSketch = p5_ => {
       this.colorStem = p5_.color(p5_.hue(this.color), p5_.saturation(this.color) * 4, p5_.brightness(this.color) * 0.5);
 
       this.noisePetalForm = new NoiseWrap(noisePetalFormScale, 0.01, "noisePetalForm");
-      this.noisePetalPosition = new NoiseWrap(noisePetalPositionScale, 0.05, "noisePetalPosition");
+      this.noisePetalPosition = new NoiseWrap(noisePetalPositionScale, 0.02, "noisePetalPosition");
       this.noisePetalInteriorOffset = new NoiseWrap(noisePetalInteriorOffsetScale, 0.01, "noisePetalInteriorOffset");
       this.noisePetalExteriorOffset = new NoiseWrap(noisePetalExteriorOffsetScale, 0.01, "noisePetalExteriorOffset");
       this.noiseStemCurvePosition = new NoiseWrap(noiseStemCurvePositionScale, 0.01, "noiseStemCurvePosition");

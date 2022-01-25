@@ -14,7 +14,7 @@ function showFlower(name) {
 }
 
 
-window.addEventListener("load", function(){
-  let p5Ref = new p5(flowerSketch);
-  p5Ref.setName("peper4d");
-});
+// window.addEventListener("load", function(){
+//   let p5Ref = new p5(flowerSketch);
+//   p5Ref.setName("peper4d");
+// });
