@@ -27,10 +27,10 @@ const flowerSketch = p5_ => {
     flower.draw();
   }
 
-  p5_.mouseClicked = function() {
-    let randomString = (Math.random() + 1).toString(36).substring(2);
-    flower = Utils.flowerGenerator(randomString);
-  }
+  // p5_.mouseClicked = function() {
+  //   let randomString = (Math.random() + 1).toString(36).substring(2);
+  //   flower = Utils.flowerGenerator(randomString);
+  // }
 
 
   // Class Utils
@@ -96,7 +96,7 @@ const flowerSketch = p5_ => {
       noiseStemCurvePositionScale,
       noiseStemCurveOffsetScale
     ) {
-      this.position = position;
+      this.flowerPosition = position;
       this.numPetals = numPetals;
       this.stemLength = stemLength;
       this.color = color_;
@@ -117,15 +117,15 @@ const flowerSketch = p5_ => {
       // Flower starting attributes
       this.noiseSeedForm = new NoiseWrap(2, 0.1, "noiseSeedForm");
       this.noiseFirstPetalsSize = new NoiseWrap(2, 0.1, "noiseFirstPetalsSize");
-      this.seedFrames = 50;
+      this.seedFrames = 30;
       this.seedFrameIni = p5_.frameCount;
       this.flowerState = "seed";
       this.temporalStemLength = 10;
       this.temporalStemLengthSpeed = 5;
       this.bigStemsFrameIni;
       this.bigStemsFrames = 20;
-      this.temporalPetalsSize = 0.1;
-      this.temporalPetalsSizeSpeed = 0.1;
+      this.temporalPetalsSize = 0.01;
+      this.temporalPetalsSizeSpeed = 0.02;
     }
 
     draw() {
@@ -160,20 +160,10 @@ const flowerSketch = p5_ => {
     }
 
     drawSmallStems() {
-      let angleStep = p5_.TWO_PI / this.numPetals;
+      let positions = this.getPetalPositions(this.temporalStemLength);
 
-      for (let i = 0; i < p5_.TWO_PI; i += angleStep) {
-        let sx = this.position.x + (p5_.cos(i) * this.temporalStemLength);
-        let sy = this.position.y + (p5_.sin(i) * this.temporalStemLength);
-
-        let noisePosition = this.noisePetalPosition.getVector(p5_.frameCount + (i * 1000));
-        let noiseOffset = this.noisePetalExteriorOffset.get(p5_.frameCount + (i * 1000));
-
-        let position = p5_.createVector(sx + noisePosition.x, sy + noisePosition.y);
-        noisePosition.add(position);
-        let finalPosition = this.intermediatePosition(this.position, noisePosition, 1 + noiseOffset);
-
-        this.drawStem(finalPosition, i * 1000);
+      for (let i = 0; i < positions.length; i++) {
+        this.drawStem(positions[i], i * 1000);
       }
 
       this.temporalStemLength += this.temporalStemLengthSpeed
@@ -184,20 +174,10 @@ const flowerSketch = p5_ => {
     }
 
     drawBigStems() {
-      let angleStep = p5_.TWO_PI / this.numPetals;
+      let positions = this.getPetalPositions(this.stemLength);
 
-      for (let i = 0; i < p5_.TWO_PI; i += angleStep) {
-        let sx = this.position.x + (p5_.cos(i) * this.stemLength);
-        let sy = this.position.y + (p5_.sin(i) * this.stemLength);
-
-        let noisePosition = this.noisePetalPosition.getVector(p5_.frameCount + (i * 1000));
-        let noiseOffset = this.noisePetalExteriorOffset.get(p5_.frameCount + (i * 1000));
-
-        let position = p5_.createVector(sx + noisePosition.x, sy + noisePosition.y);
-        noisePosition.add(position);
-        let finalPosition = this.intermediatePosition(this.position, noisePosition, 1 + noiseOffset);
-
-        this.drawStem(finalPosition, i * 1000);
+      for (let i = 0; i < positions.length; i++) {
+        this.drawStem(positions[i], i * 1000);
       }
 
       if(p5_.frameCount >= (this.bigStemsFrameIni + this.bigStemsFrames)) {
@@ -206,16 +186,13 @@ const flowerSketch = p5_ => {
     }
 
     drawFirstPetals() {
-      let angleStep = p5_.TWO_PI / this.numPetals;
+      let positions = this.getPetalPositions(this.stemLength);
 
-      for (let i = 0; i < p5_.TWO_PI; i += angleStep) {
-        let sx = this.position.x + (p5_.cos(i) * this.stemLength);
-        let sy = this.position.y + (p5_.sin(i) * this.stemLength);
-
+      for (let i = 0; i < positions.length; i++) {
         let noiseSize = this.noiseFirstPetalsSize.getVector(p5_.frameCount + (i * 1000));
         let petalLength = (this.petalLength * this.temporalPetalsSize) + noiseSize.x;
         let petalWidth = (this.petalWidth * this.temporalPetalsSize) + noiseSize.y;
-        this.drawPetal(p5_.createVector(sx, sy), i * 1000, petalLength, petalWidth);
+        this.drawPetal(positions[i], i * 1000, petalLength, petalWidth);
       }
 
       this.temporalPetalsSize += this.temporalPetalsSizeSpeed
@@ -225,13 +202,10 @@ const flowerSketch = p5_ => {
     }
 
     drawCompletedFlower() {
-      let angleStep = p5_.TWO_PI / this.numPetals;
+      let positions = this.getPetalPositions(this.stemLength);
 
-      for (let i = 0; i < p5_.TWO_PI; i += angleStep) {
-        let sx = this.position.x + (p5_.cos(i) * this.stemLength);
-        let sy = this.position.y + (p5_.sin(i) * this.stemLength);
-
-        this.drawPetal(p5_.createVector(sx, sy), i * 1000, this.petalLength, this.petalWidth);
+      for (let i = 0; i < positions.length; i++) {
+        this.drawPetal(positions[i], i * 1000, this.petalLength, this.petalWidth);
       }
     }
 
@@ -241,29 +215,23 @@ const flowerSketch = p5_ => {
     // - Interior petal part
     drawPetal(petalPosition, noiseSeed, petalLength, petalWidth) {
       // calculating all the noises
-      let noiseExteriorPosition = this.noisePetalPosition.getVector(p5_.frameCount + noiseSeed);
       let noiseInteriorPosition = this.noisePetalPosition.getVector(p5_.frameCount + noiseSeed + 1000);
-      let noiseExteriorOffset = this.noisePetalExteriorOffset.get(p5_.frameCount + noiseSeed);
       let noiseInteriorOffset = this.noisePetalInteriorOffset.get(p5_.frameCount + noiseSeed);
 
-      // calculate exterior petal position
-      noiseExteriorPosition.add(petalPosition);
-      let exteriorPosition = this.intermediatePosition(this.position, noiseExteriorPosition, 1 + noiseExteriorOffset);
-
       // calculate interior petal position
-      let petalInteriorPosition = p5_.createVector(exteriorPosition.x + noiseInteriorPosition.x, exteriorPosition.y + noiseInteriorPosition.y);
-      let interiorPosition = this.intermediatePosition(this.position, petalInteriorPosition, 0.9 + noiseInteriorOffset);
+      let petalInteriorPosition = p5_.createVector(petalPosition.x + noiseInteriorPosition.x, petalPosition.y + noiseInteriorPosition.y);
+      let interiorPosition = this.intermediatePosition(this.flowerPosition, petalInteriorPosition, 0.9 + noiseInteriorOffset);
 
       // draw everything
-      this.drawStem(exteriorPosition, noiseSeed);
-      this.drawPetalCurve(exteriorPosition, petalLength, petalWidth, noiseSeed, this.color, p5_.BLEND, this.noisePetalForm);
+      this.drawStem(petalPosition, noiseSeed);
+      this.drawPetalCurve(petalPosition, petalLength, petalWidth, noiseSeed, this.color, p5_.BLEND, this.noisePetalForm);
       this.drawPetalCurve(interiorPosition, petalLength, petalWidth, noiseSeed + 10000, this.colorPetalSecondary, p5_.BURN, this.noisePetalForm); // BURN blendMode so only already painted pixels are painted
     }
 
     drawStem(endPosition, noiseSeed) {
       let noisePosition = this.noiseStemCurvePosition.getVector(p5_.frameCount + noiseSeed);
       let noiseOffset = this.noiseStemCurveOffset.get(p5_.frameCount + noiseSeed);
-      let positionIntermediate = this.intermediatePosition(this.position, endPosition, 0.5 + noiseOffset);
+      let positionIntermediate = this.intermediatePosition(this.flowerPosition, endPosition, 0.5 + noiseOffset);
       positionIntermediate.add(noisePosition);
 
       p5_.push();
@@ -271,8 +239,8 @@ const flowerSketch = p5_ => {
       p5_.strokeWeight(this.stemWidth);
       p5_.noFill();
       p5_.beginShape();
-      p5_.curveVertex(this.position.x, this.position.y);
-      p5_.curveVertex(this.position.x, this.position.y);
+      p5_.curveVertex(this.flowerPosition.x, this.flowerPosition.y);
+      p5_.curveVertex(this.flowerPosition.x, this.flowerPosition.y);
       p5_.curveVertex(positionIntermediate.x, positionIntermediate.y);
       p5_.curveVertex(endPosition.x, endPosition.y);
       p5_.curveVertex(endPosition.x, endPosition.y);
@@ -298,7 +266,7 @@ const flowerSketch = p5_ => {
       }
 
       // Calculate rotation angle
-      let headingVector = p5.Vector.sub(petalPosition, this.position)
+      let headingVector = p5.Vector.sub(petalPosition, this.flowerPosition)
       let angle = headingVector.heading();
 
       // Draw curve
@@ -327,6 +295,32 @@ const flowerSketch = p5_ => {
       let positionIntermediate = p5_.createVector(v1.x + directionVector.x, v1.y + directionVector.y);
 
       return positionIntermediate;
+    }
+
+    getPetalPositions(stemLength) {
+      let result = [];
+      let index = 0;
+      let angleStep = p5_.TWO_PI / this.numPetals;
+
+      for (let i = 0; i < p5_.TWO_PI; i += angleStep) {
+        let sx = this.flowerPosition.x + (p5_.cos(i) * stemLength);
+        let sy = this.flowerPosition.y + (p5_.sin(i) * stemLength);
+
+        let noisePosition = this.noisePetalPosition.getVector(p5_.frameCount + (i * 1000));
+        let noiseOffset = this.noisePetalExteriorOffset.get(p5_.frameCount + (i * 1000));
+
+        // position
+        let position = p5_.createVector(sx + noisePosition.x, sy + noisePosition.y);
+        noisePosition.add(position);
+
+        // distant to center
+        let finalPosition = this.intermediatePosition(this.flowerPosition, noisePosition, 1 + noiseOffset);
+
+        result[index] = finalPosition;
+        index ++;
+      }
+
+      return result;
     }
 
   }
