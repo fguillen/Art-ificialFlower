@@ -49,22 +49,27 @@ function showShareButtons(seedText) {
 function initializeShareDiv() {
   shareWrapper.classList.add("hidden");
 
-  // Share Buttons
-  if (navigator.share) {
-    shareDesktop.classList.add("hidden");
+  // TODO: it is not working
 
-    shareMobileLink.addEventListener("click", event => {
-      navigator.share({
-        title: document.title,
-        text: "This is my Art-ificial Flower",
-        url: window.location.href
-      })
-      .then(() => console.log('Successful share'))
-      .catch(error => console.log('Error sharing:', error));
-    });
-  } else {
-    shareMobile.classList.add("hidden");
-  }
+  // // Share Buttons
+  // if (navigator.share) {
+  //   shareDesktop.classList.add("hidden");
+
+
+  //   shareMobileLink.addEventListener("click", event => {
+  //     navigator.share({
+  //       title: document.title,
+  //       text: "This is my Art-ificial Flower",
+  //       url: window.location.href
+  //     })
+  //     .then(() => console.log('Successful share'))
+  //     .catch(error => console.log('Error sharing:', error));
+  //   });
+  // } else {
+  //   shareMobile.classList.add("hidden");
+  // }
+
+  shareMobile.classList.add("hidden");
 }
 
 function loadFlower(seed) {
