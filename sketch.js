@@ -1,30 +1,35 @@
 const flowerSketch = p5_ => {
   let flower;
+  let seed;
 
   p5_.setup = function() {
     let canvas = p5_.createCanvas(800, 800);
-    canvas.parent('p5-div');
+    canvas.parent("p5-div");
     p5_.frameRate(20);
     p5_.colorMode(p5_.HSB);
     p5_.noiseSeed(1);
-
-    // this.name = this.name || "y1oc9";
-    // flower = Utils.flowerGenerator(this.name);
 
     // noLoop();
     p5_.centerPosition = p5_.createVector(p5_.width / 2, p5_.height / 2);
   }
 
-  p5_.setName = function (name) {
-    this.name = name;
-    flower = Utils.flowerGenerator(this.name);
+  p5_.setWidthAndName = function(width, name) {
+    let seed = CryptoJS.MD5(name).toString();
+    p5_.setWidthAndSeed(width, seed)
+  }
+
+  p5_.setWidthAndSeed = function(width, seed) {
+    this.seed = seed;
+    p5_.resizeCanvas(width, width);
+    p5_.centerPosition = p5_.createVector(p5_.width / 2, p5_.height / 2);
+    this.flower = Utils.flowerGenerator(this.seed);
   }
 
   p5_.draw = function() {
-    if(flower == null) return;
+    if(this.flower == null) return;
 
     p5_.background(255);
-    flower.draw();
+    this.flower.draw();
   }
 
   // p5_.mouseClicked = function() {
@@ -35,9 +40,9 @@ const flowerSketch = p5_ => {
 
   // Class Utils
   class Utils {
-    static flowerGenerator(name) {
-      let flowerSeed = Math.abs(name.hashCode());
-      console.log("name: '" + name + "', flowerSeed: " + flowerSeed);
+    static flowerGenerator(seedText) {
+      let flowerSeed = Math.abs(seedText.hashCode());
+      console.log("seedText: '" + seedText + "', flowerSeed: " + flowerSeed);
 
       let position = p5_.centerPosition;
       let numPetals = Utils.mapCustom(flowerSeed, 20, 60);
@@ -55,6 +60,7 @@ const flowerSketch = p5_ => {
 
       let flower =
         new Flower(
+          seedText,
           position,
           numPetals,
           stemLength,
@@ -82,6 +88,7 @@ const flowerSketch = p5_ => {
   // Class Flower
   class Flower {
     constructor(
+      seed,
       position,
       numPetals,
       stemLength,
@@ -96,6 +103,7 @@ const flowerSketch = p5_ => {
       noiseStemCurvePositionScale,
       noiseStemCurveOffsetScale
     ) {
+      this.seed = seed;
       this.flowerPosition = position;
       this.numPetals = numPetals;
       this.stemLength = stemLength;
@@ -198,6 +206,7 @@ const flowerSketch = p5_ => {
       this.temporalPetalsSize += this.temporalPetalsSizeSpeed
       if(this.temporalPetalsSize >= 1) {
         this.flowerState = "completed";
+        showShareButtons(this.seed);
       }
     }
 
