@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Beth+Ellen&display=swap');
+
 .hidden {
   display: none;
 }
@@ -19,3 +21,18 @@
 #seed-text {
   font-weight: bold;
 }
+
+.title {
+  font-family: 'Beth Ellen', cursive;
+}
+
+
+/* .narrow {
+  width: 330px;
+}
+
+@media (max-width: 480px) {
+  .narrow {
+    width: 100%;
+  }
+} */
