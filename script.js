@@ -13,5 +13,8 @@ function showFlower(name) {
   p5Ref.setName(name);
 }
 
-let p5Ref = new p5(flowerSketch);
-p5Ref.setName("pepe");
+
+window.addEventListener("load", function(){
+  let p5Ref = new p5(flowerSketch);
+  p5Ref.setName("pepe4");
+});

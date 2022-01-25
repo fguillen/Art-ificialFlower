@@ -1,6 +1,5 @@
 const flowerSketch = p5_ => {
   let flower;
-  let name;
 
   p5_.setup = function() {
     let canvas = p5_.createCanvas(800, 800);
@@ -115,10 +114,13 @@ const flowerSketch = p5_ => {
       this.noiseStemCurvePosition = new NoiseWrap(noiseStemCurvePositionScale, 0.01, "noiseStemCurvePosition");
       this.noiseStemCurveOffset = new NoiseWrap(noiseStemCurveOffsetScale, 0.01, "noiseStemCurveOffset");
 
+      // Flower starting attributes
       this.noiseSeedForm = new NoiseWrap(2, 0.1, "noiseSeedForm");
-
-      this.flowerState = "seed";
-      this.temporalStemLength = 0;
+      this.flowerState = "smallStems";
+      this.temporalStemLength = 10;
+      this.temporalStemLengthSpeed = 1;
+      this.frameBigStemsStarted;
+      this.framesInBigStems = 100;
     }
 
     draw() {
@@ -146,6 +148,42 @@ const flowerSketch = p5_ => {
 
     drawSeed() {
       this.drawPetalCurve(p5_.centerPosition, 10, 10, 100, this.color, p5_.BLEND, this.noiseSeedForm);
+    }
+
+    drawSmallStems() {
+      let angleStep = p5_.TWO_PI / this.numPetals;
+
+      for (let i = 0; i < p5_.TWO_PI; i += angleStep) {
+        let noiseExteriorPosition = this.noisePetalPosition.getVector(p5_.frameCount + (i * 1000));
+
+        let sx = this.position.x + (p5_.cos(i) * this.temporalStemLength) + noiseExteriorPosition.x;
+        let sy = this.position.y + (p5_.sin(i) * this.temporalStemLength) + noiseExteriorPosition.y;
+
+        this.drawStem(p5_.createVector(sx, sy), i * 1000);
+      }
+
+      this.temporalStemLength += this.temporalStemLengthSpeed
+      if(this.temporalStemLength >= this.stemLength) {
+        this.frameBigStemsStarted = p5_.frameCount;
+        this.flowerState = "bigStems";
+      }
+    }
+
+    drawBigStems() {
+      let angleStep = p5_.TWO_PI / this.numPetals;
+
+      for (let i = 0; i < p5_.TWO_PI; i += angleStep) {
+        let noiseExteriorPosition = this.noisePetalPosition.getVector(p5_.frameCount + (i * 1000));
+
+        let sx = this.position.x + (p5_.cos(i) * this.stemLength) + noiseExteriorPosition.x;
+        let sy = this.position.y + (p5_.sin(i) * this.stemLength) + noiseExteriorPosition.y;
+
+        this.drawStem(p5_.createVector(sx, sy), i * 1000);
+      }
+
+      if(p5_.frameCount >= (this.frameBigStemsStarted + this.framesInBigStems)) {
+        this.flowerState = "firstPetals";
+      }
     }
 
     drawCompletedFlower() {
