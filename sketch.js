@@ -13,6 +13,7 @@ const flowerSketch = p5_ => {
     // flower = Utils.flowerGenerator(this.name);
 
     // noLoop();
+    p5_.centerPosition = p5_.createVector(p5_.width / 2, p5_.height / 2);
   }
 
   p5_.setName = function (name) {
@@ -39,7 +40,7 @@ const flowerSketch = p5_ => {
       let flowerSeed = Math.abs(name.hashCode());
       console.log("name: '" + name + "', flowerSeed: " + flowerSeed);
 
-      let position = p5_.createVector(p5_.width / 2, p5_.height / 2);
+      let position = p5_.centerPosition;
       let numPetals = Utils.mapCustom(flowerSeed, 20, 60);
       let petalColor = p5_.color(Utils.mapCustom(flowerSeed, 0, 255), 5, 82);
       let petalLength = Utils.mapCustom(flowerSeed, 15, 60);
@@ -113,13 +114,41 @@ const flowerSketch = p5_ => {
       this.noisePetalExteriorOffset = new NoiseWrap(noisePetalExteriorOffsetScale, 0.01, "noisePetalExteriorOffset");
       this.noiseStemCurvePosition = new NoiseWrap(noiseStemCurvePositionScale, 0.01, "noiseStemCurvePosition");
       this.noiseStemCurveOffset = new NoiseWrap(noiseStemCurveOffsetScale, 0.01, "noiseStemCurveOffset");
+
+      this.noiseSeedForm = new NoiseWrap(2, 0.1, "noiseSeedForm");
+
+      this.flowerState = "seed";
+      this.temporalStemLength = 0;
     }
 
     draw() {
-      this.drawPetals();
+      switch (this.flowerState) {
+        case "seed":
+          this.drawSeed();
+          break;
+        case "smallStems":
+          this.drawSmallStems();
+          break;
+        case "bigStems":
+          this.drawBigStems();
+          break;
+        case "firstPetals":
+          this.drawFirstsPetals();
+          break;
+        case "completed":
+          this.drawCompletedFlower();
+          break;
+        default:
+          console.error("FlowerState not supported: '" + this.flowerState + "'");
+          break;
+      }
     }
 
-    drawPetals() {
+    drawSeed() {
+      this.drawPetalCurve(p5_.centerPosition, 10, 10, 100, this.color, p5_.BLEND, this.noiseSeedForm);
+    }
+
+    drawCompletedFlower() {
       let angleStep = p5_.TWO_PI / this.numPetals;
 
       for (let i = 0; i < p5_.TWO_PI; i += angleStep) {
@@ -151,8 +180,8 @@ const flowerSketch = p5_ => {
 
       // draw everything
       this.drawStem(exteriorPosition, noiseSeed);
-      this.drawPetalCurve(exteriorPosition, noiseSeed, this.color, p5_.BLEND, 20);
-      this.drawPetalCurve(interiorPosition, noiseSeed + 10000, this.colorPetalSecondary, p5_.BURN, 10); // BURN blendMode so only already painted pixels are painted
+      this.drawPetalCurve(exteriorPosition, this.petalLength, this.petalWidth, noiseSeed, this.color, p5_.BLEND, this.noisePetalForm);
+      this.drawPetalCurve(interiorPosition, this.petalLength, this.petalWidth, noiseSeed + 10000, this.colorPetalSecondary, p5_.BURN, this.noisePetalForm); // BURN blendMode so only already painted pixels are painted
     }
 
     drawStem(endPosition, noiseSeed) {
@@ -176,7 +205,7 @@ const flowerSketch = p5_ => {
     }
 
     // This is the function that real draw the petal
-    drawPetalCurve(petalPosition, noiseSeed, color_, blendModeCode){
+    drawPetalCurve(petalPosition, petalLength, petalWidth, noiseSeed, color_, blendModeCode, noiseGenerator){
       let steps = 10
       let angleStep = p5_.TWO_PI / steps;
       let curvePoints = new Array(steps);
@@ -184,9 +213,9 @@ const flowerSketch = p5_ => {
 
       // Calculate points
       for (let i = 0; i < p5_.TWO_PI; i += angleStep) {
-        let noisePosition = this.noisePetalForm.getVector(p5_.frameCount + noiseSeed + (i * 1000));
-        let sx = (p5_.cos(i) * this.petalLength) + noisePosition.x;
-        let sy = (p5_.sin(i) * this.petalWidth) + noisePosition.y;
+        let noisePosition = noiseGenerator.getVector(p5_.frameCount + noiseSeed + (i * 1000));
+        let sx = (p5_.cos(i) * petalLength) + noisePosition.x;
+        let sy = (p5_.sin(i) * petalWidth) + noisePosition.y;
 
         curvePoints[index] = p5_.createVector(sx, sy);
         index ++;

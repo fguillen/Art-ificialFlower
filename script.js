@@ -12,3 +12,6 @@ function showFlower(name) {
   let p5Ref = new p5(flowerSketch);
   p5Ref.setName(name);
 }
+
+let p5Ref = new p5(flowerSketch);
+p5Ref.setName("pepe");
