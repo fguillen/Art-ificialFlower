@@ -4,7 +4,7 @@ const flowerSketch = p5_ => {
 
   p5_.setup = function() {
     let canvas = p5_.createCanvas(800, 800);
-    canvas.parent("p5-div");
+    // canvas.parent("p5-div");
     p5_.frameRate(20);
     p5_.colorMode(p5_.HSB);
     p5_.noiseSeed(1);

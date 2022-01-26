@@ -30,8 +30,13 @@ function elementWidth(element) {
 }
 
 function showFlower(name) {
-  p5Ref = new p5(flowerSketch);
+  p5Ref = new p5(flowerSketch, p5Div);
   p5Ref.setWidthAndName(elementWidth(p5Div), name);
+}
+
+function loadFlower(seed) {
+  p5Ref = new p5(flowerSketch, p5Div);
+  p5Ref.setWidthAndSeed(elementWidth(p5Div), seed);
 }
 
 function showShareButtons(seedText) {
@@ -77,11 +82,6 @@ function initializeShareDivVisibility() {
   } else {
     shareMobile.classList.add("hidden");
   }
-}
-
-function loadFlower(seed) {
-  p5Ref = new p5(flowerSketch);
-  p5Ref.setWidthAndSeed(elementWidth(p5Div), seed);
 }
 
 // Window loaded
