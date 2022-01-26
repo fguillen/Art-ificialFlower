@@ -8,6 +8,10 @@ const p5Div = document.getElementById("p5-div");
 const seedTextElement = document.getElementById("seed-text");
 const socialButtons = document.getElementById("social-buttons");
 
+var p5Ref;
+
+console.log("Art-ificial Flower v0.1.13");
+
 nameForm.onsubmit = submitForm;
 
 function submitForm(event) {
@@ -26,7 +30,7 @@ function elementWidth(element) {
 }
 
 function showFlower(name) {
-  let p5Ref = new p5(flowerSketch);
+  p5Ref = new p5(flowerSketch);
   p5Ref.setWidthAndName(elementWidth(p5Div), name);
 }
 
@@ -74,7 +78,7 @@ function initializeShareDivVisibility() {
 }
 
 function loadFlower(seed) {
-  let p5Ref = new p5(flowerSketch);
+  p5Ref = new p5(flowerSketch);
   p5Ref.setWidthAndSeed(elementWidth(p5Div), seed);
 }
 
