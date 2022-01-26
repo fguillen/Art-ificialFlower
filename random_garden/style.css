@@ -1,0 +1,10 @@
+.flower-div a {
+  font-weight: bold;
+  font-size: 0.8em;
+  color: #c7c9d1;
+  opacity: 0;
+}
+
+.flower-div:hover a {
+  opacity: 1;
+}

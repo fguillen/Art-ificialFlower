@@ -10,7 +10,7 @@ const socialButtons = document.getElementById("social-buttons");
 
 var p5Ref;
 
-console.log("Art-ificial Flower v0.1.13");
+console.log("Art-ificial Flower v0.1.17");
 
 nameForm.onsubmit = submitForm;
 

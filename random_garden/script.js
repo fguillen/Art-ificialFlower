@@ -1,10 +1,16 @@
-console.log("Art-ificial Flower v0.1.13");
+console.log("Art-ificial Flower v0.1.17");
 
 function generateFlowers() {
-  document.querySelectorAll(".p5-div").forEach( element => {
-    let seed = CryptoJS.lib.WordArray.random(128 / 8).toString();
-    loadFlower(seed, element)
-  })
+  console.log("generateFlowers");
+  document.querySelectorAll(".flower-div").forEach( element => {
+    console.log("element " + element);
+    const p5Div = element.querySelector(".p5-div");
+    const link = element.querySelector("a");
+    const seed = CryptoJS.lib.WordArray.random(128 / 8).toString();
+    link.setAttribute("href", "./../#" + seed);
+    link.innerHTML = seed;
+    loadFlower(seed, p5Div)
+  });
 }
 
 function loadFlower(seed, element) {
