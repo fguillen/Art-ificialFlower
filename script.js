@@ -56,6 +56,8 @@ function updateShareLinks() {
   // Mobile Share Button
   if (navigator.share) {
     shareMobileLink.addEventListener("click", event => {
+      event.preventDefault();
+
       navigator.share({
         title: document.title,
         text: "This is my Art-ificial Flower, how is yours?",

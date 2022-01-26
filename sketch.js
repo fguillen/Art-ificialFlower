@@ -44,19 +44,22 @@ const flowerSketch = p5_ => {
       let flowerSeed = Math.abs(seedText.hashCode());
       console.log("seedText: '" + seedText + "', flowerSeed: " + flowerSeed);
 
+      // To addapt to small screens
+      let scale = p5_.map(p5_.width, 328, 990, 0.5, 1, true);
+
       let position = p5_.centerPosition;
-      let numPetals = Utils.mapCustom(flowerSeed, 20, 60);
+      let numPetals = Math.abs(Utils.mapCustom(flowerSeed, 20, 60) * scale);
       let petalColor = p5_.color(Utils.mapCustom(flowerSeed, 0, 255), 5, 82);
-      let petalLength = Utils.mapCustom(flowerSeed, 15, 60);
-      let petalWidth = Utils.mapCustom(flowerSeed, 10, 40);
+      let petalLength = Utils.mapCustom(flowerSeed, 15, 60) * scale;
+      let petalWidth = Utils.mapCustom(flowerSeed, 10, 40) * scale;
       let stemLength = Utils.mapCustom(flowerSeed, p5_.width / 4, (p5_.width / 2) - petalLength);
-      let stemWidth = Utils.mapCustom(flowerSeed, 2, 12);
-      let noisePetalFormScale = Utils.mapCustom(flowerSeed, 1, 5);
-      let noisePetalPositionScale = Utils.mapCustom(flowerSeed, 5, 15);
-      let noisePetalInteriorOffsetScale = Utils.mapCustom(flowerSeed, 0.1, 0.5);
-      let noisePetalExteriorOffsetScale = Utils.mapCustom(flowerSeed, 0.1, 0.5);
-      let noiseStemCurvePositionScale = Utils.mapCustom(flowerSeed, 10, 50);
-      let noiseStemCurveOffsetScale = Utils.mapCustom(flowerSeed, 0.1, 0.4);
+      let stemWidth = Utils.mapCustom(flowerSeed, 2, 12) * scale;
+      let noisePetalFormScale = Utils.mapCustom(flowerSeed, 1, 5) * scale;
+      let noisePetalPositionScale = Utils.mapCustom(flowerSeed, 5, 15) * scale;
+      let noisePetalInteriorOffsetScale = Utils.mapCustom(flowerSeed, 0.1, 0.5) * scale;
+      let noisePetalExteriorOffsetScale = Utils.mapCustom(flowerSeed, 0.1, 0.5) * scale;
+      let noiseStemCurvePositionScale = Utils.mapCustom(flowerSeed, 10, 50) * scale;
+      let noiseStemCurveOffsetScale = Utils.mapCustom(flowerSeed, 0.1, 0.4) * scale;
 
       let flower =
         new Flower(
