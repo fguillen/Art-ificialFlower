@@ -34,42 +34,43 @@ function showShareButtons(seedText) {
   shareWrapper.classList.remove("hidden");
   shareWrapper.classList.add("fadein");
 
-
+  // Update url and title
   window.location.hash = seedText;
   document.title = document.title + " for Seed " + seedText;
 
   seedTextElement.innerText = seedText;
   seedTextElement.setAttribute("href", window.location.toString());
 
-  socialButtons.setAttribute("data-meta-link", window.location.toString());
-  socialButtons.setAttribute("data-meta-title", "This is my art-ificial flower, how is yours?")
-  socializer(".socializer");
+  updateShareLinks()
 }
 
-function initializeShareDiv() {
+function updateShareLinks() {
+  socialButtons.setAttribute("data-meta-link", window.location.toString());
+  socialButtons.setAttribute("data-meta-title", "This is my Art-ificial Flower, how is yours?")
+  socializer(".socializer");
+
+  // Mobile Share Button
+  if (navigator.share) {
+    shareMobileLink.addEventListener("click", event => {
+      navigator.share({
+        title: document.title,
+        text: "This is my Art-ificial Flower, how is yours?",
+        url: window.location.toString()
+      })
+      .then(() => console.log("Successful share"))
+      .catch(error => console.log("Error sharing:", error));
+    });
+  }
+}
+
+function initializeShareDivVisibility() {
   shareWrapper.classList.add("hidden");
 
-  // TODO: it is not working
-
-  // // Share Buttons
-  // if (navigator.share) {
-  //   shareDesktop.classList.add("hidden");
-
-
-  //   shareMobileLink.addEventListener("click", event => {
-  //     navigator.share({
-  //       title: document.title,
-  //       text: "This is my Art-ificial Flower",
-  //       url: window.location.href
-  //     })
-  //     .then(() => console.log('Successful share'))
-  //     .catch(error => console.log('Error sharing:', error));
-  //   });
-  // } else {
-  //   shareMobile.classList.add("hidden");
-  // }
-
-  shareMobile.classList.add("hidden");
+  if (navigator.share) {
+    shareDesktop.classList.add("hidden");
+  } else {
+    shareMobile.classList.add("hidden");
+  }
 }
 
 function loadFlower(seed) {
@@ -79,7 +80,8 @@ function loadFlower(seed) {
 
 // Window loaded
 window.addEventListener("load", function(){
-  initializeShareDiv();
+  initializeShareDivVisibility();
+
   if(window.location.hash != ""){
     loadFlower(window.location.hash.substring(1));
   } else {
