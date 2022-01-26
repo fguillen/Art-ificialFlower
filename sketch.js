@@ -314,7 +314,7 @@ const flowerSketch = p5_ => {
       let index = 0;
       let angleStep = p5_.TWO_PI / this.numPetals;
 
-      for (let i = 0; i < p5_.TWO_PI; i += angleStep) {
+      for (let i = 0; i <= (p5_.TWO_PI - angleStep); i += angleStep) {
         let sx = this.flowerPosition.x + (p5_.cos(i) * stemLength);
         let sy = this.flowerPosition.y + (p5_.sin(i) * stemLength);
 
